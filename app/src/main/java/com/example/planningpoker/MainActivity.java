@@ -29,12 +29,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView Info;
     private  int counter = 5;
     private FirebaseDatabase database;
-    private DatabaseReference myRef;
+    private DatabaseReference myRef2;
     private String username,password;
-
-    public static final String MyPREFERENCES = "MyPrefs" ;
-    public static final String sUsername = "userNameKey";
-    public static final String sPassword = "paswordKey";
+    private Button lAdmin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +43,14 @@ public class MainActivity extends AppCompatActivity {
         Login = (Button)findViewById(R.id.btnLogin);
         SignUp = (Button)findViewById(R.id.btnSignUp);
         Info = (TextView)findViewById(R.id.tvInfo);
+        lAdmin = (Button)findViewById(R.id.bLoginAdmin);
+
+        lAdmin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loginasadmin();
+            }
+        });
 
         Info.setText("Number of attempts: 5");
 
@@ -70,11 +75,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-    private void secondactivity ()
-    {
-        Intent intent = new Intent(MainActivity.this, SecondActivity.class);
-        startActivity(intent);
-    }
 
     private void useroradmin ()
     {
@@ -82,18 +82,23 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void loginasadmin ()
+    {
+        Intent intent = new Intent(MainActivity.this, LoginAsAdmin.class);
+        startActivity(intent);
+    }
+
     private void userCheck(final String username){
         // Read from the database
         database = FirebaseDatabase.getInstance();
-        myRef = database.getReference("Admins").child(username).child("Password");
-        myRef = database.getReference("Users").child(username).child("Password");
+        myRef2 = database.getReference("Users").child(username).child("Password");
 
-        myRef.addValueEventListener(new ValueEventListener() {
+        myRef2.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 String kod = dataSnapshot.getValue().toString();
-
+                //Toast.makeText(MainActivity.this,kod, Toast.LENGTH_SHORT).show();
 
                 if(!kod.equals(password)){
                     Toast.makeText(MainActivity.this,"Password or Username is incorrect", Toast.LENGTH_SHORT).show();
@@ -108,8 +113,6 @@ public class MainActivity extends AppCompatActivity {
                 {
                     Toast.makeText(MainActivity.this,"Successful login",Toast.LENGTH_SHORT).show();
                 }
-
-
             }
 
             @Override
@@ -119,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     private boolean validate()
     {
         Boolean result = false;
